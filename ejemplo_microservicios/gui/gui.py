@@ -113,6 +113,10 @@ def index(api):
         json_result = {}
         return render_template("index.html", result=json_result)
 
+@app.route("/list", methods=['GET'])
+def list():
+    respuesta = requests.get('http://host.docker.internal:8080/catalog/product', headers=header_m4)
+    return render_template("list.html", result=respuesta.json())
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
