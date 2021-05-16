@@ -8,4 +8,5 @@ urlpatterns = [
     path('product/<int:pk>/', CatalogViewSet.as_view({
         'get': 'product_detail',
     })),
+    
 ]

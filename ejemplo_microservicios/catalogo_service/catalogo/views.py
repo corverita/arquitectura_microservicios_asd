@@ -29,11 +29,12 @@
 #
 #--------------------------------------------------------------------------------------------------
 
-from .serializers import ProductSerializer
-from django.shortcuts import render, get_object_or_404
+from .serializers import CarritoItemSerializer, ProductSerializer
+from django.shortcuts import redirect, render, get_object_or_404
 from rest_framework.response import Response
-from .models import Category, Product
+from .models import CarritoItem, Category, Product
 from rest_framework import viewsets,status
+import json
 
 class CatalogViewSet(viewsets.ViewSet):
 
@@ -82,3 +83,49 @@ class CatalogViewSet(viewsets.ViewSet):
     #                 'shop/product/detail.html',
     #                 {'product': product,
     #                 'cart_product_form': cart_product_form})
+
+class CarritoItemViewSet(viewsets.ViewSet):
+
+    def add(self,request):
+        body=json.loads(request.body)
+        product_id=body['product_id']
+        product=get_object_or_404(Product,id=product_id)
+        quantity=body['quantity']
+        quantity=int(quantity)
+        total=int(product.price)*int(quantity)
+        
+        carrito=CarritoItem(quantity=quantity,product=product,total_product=total)
+
+        for item in CarritoItem.objects.all():
+            if item.product==product:
+                item.quantity += quantity
+                item.total_product = product.price*item.quantity
+                product.stock -= quantity
+                product.save()
+                item.save()
+                return redirect("cart:product")
+        product.stock -= quantity
+        product.save()
+        carrito.save()
+        return redirect("cart:product")
+
+    def remove_item(self,request):
+        body=json.loads(request.body)
+        product_id=body['product_id']
+        product=Product.objects.get(id=product_id)
+        carrito_item=get_object_or_404(CarritoItem,product=product)
+        carrito_item.delete()
+        return redirect("cart:product")
+
+    def remove_all(self,request):
+        carrito_items=CarritoItem.objects.all().delete()
+        return redirect("cart:product")
+
+    # Método que se accede por la URL /django
+    def list(self, request):
+        # Se obtiene la lista de productos
+        carrito = CarritoItem.objects.all()
+        print(carrito)
+        # Se crea el serializer y se envía como response
+        serializer_cart = CarritoItemSerializer(carrito, many=True)
+        return Response(serializer_cart.data)

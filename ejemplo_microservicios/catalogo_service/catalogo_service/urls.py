@@ -19,6 +19,7 @@ from django.urls.conf import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('catalog/', include('catalogo.urls')),
+    path('catalog/', include('catalogo.urls_products')),
+    path('cart/',include('catalogo.urls_cart'))
 
 ]

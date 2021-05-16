@@ -31,6 +31,7 @@
 
 
 from django.db import models
+from django.db.models.fields import related
 from django.urls import reverse
 
 class Category(models.Model):
@@ -75,3 +76,13 @@ class Product(models.Model):
     # Método que regresa la url absoluta del modelo, la cual contiene los campos 'id' y 'slug'.
     def get_absolute_url(self):
         return reverse('product_detail', args=[self.id, self.slug])
+        
+
+class CarritoItem(models.Model):
+    quantity=models.IntegerField()
+    product=models.ForeignKey(Product,related_name='product',on_delete=models.CASCADE)
+    total_product=models.DecimalField(max_digits=10,decimal_places=2)
+
+    # Método to String de la clase, la cual es representada por el campo 'name'.
+    def __str__(self):
+        return self.product.name
