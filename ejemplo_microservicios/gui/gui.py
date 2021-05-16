@@ -118,5 +118,11 @@ def list():
     respuesta = requests.get('http://host.docker.internal:8080/catalog/product', headers=header_m4)
     return render_template("list.html", result=respuesta.json())
 
+@app.route("/catalog/product/<id>/", methods=['GET'])
+def detail(id):
+    respuesta = requests.get('http://host.docker.internal:8080/catalog/product/'+id+'/', headers=header_m4)
+    print(respuesta)
+    return render_template("detail.html", result=respuesta.json())
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

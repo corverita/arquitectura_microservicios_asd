@@ -5,7 +5,7 @@ urlpatterns = [
     path('product', CatalogViewSet.as_view({
         'get': 'list',
     })),
-    path('products/<int:pk>/', CatalogViewSet.as_view({
+    path('product/<int:pk>/', CatalogViewSet.as_view({
         'get': 'product_detail',
     })),
 ]
