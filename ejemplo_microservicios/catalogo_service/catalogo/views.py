@@ -87,7 +87,7 @@ class CatalogViewSet(viewsets.ViewSet):
 class CarritoItemViewSet(viewsets.ViewSet):
 
     def add(self,request):
-        body=request.json
+        body=request.body
         product_id=body['product_id']
         product=get_object_or_404(Product,id=product_id)
         quantity=body['quantity']

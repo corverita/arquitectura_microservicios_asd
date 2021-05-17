@@ -68,57 +68,57 @@ url_microservice5 = 'http://172.10.0.8:8080/orders/order'
 
 
 # Método que muestra la página de inicio del sistema
-@app.route("/", defaults={'api': None}, methods=['GET'])
-@app.route("/<api>", methods=['GET'])
-def index(api):
+# @app.route("/", defaults={'api': None}, methods=['GET'])
+# @app.route("/<api>", methods=['GET'])
+# def index(api):
 
-    # Se verifica si se recibió la variable api
-    if api:
+#     # Se verifica si se recibió la variable api
+#     if api:
 
-        if int(api) == 1:
-            # Se llama al microservicio enviando como parámetro la url y el header
-            ms1 = requests.get(url_microservice1, headers=headers_m1)
-            # Se convierte la respuesta a json
-            json = ms1.json()
-            # Se crea el json que será enviado al template
-            json_result = {'ms1': json}
-        elif int(api) == 2:
-            # Se llama al microservicio enviando como parámetro la url y el header
-            ms2 = requests.get(url_microservice2, headers=header_m2)
-            # Se convierte la respuesta a json
-            json = ms2.json()
-            # Se crea el json que será enviado al template
-            json_result = {'ms2': json}
-        elif int(api) == 3:
-            # Se llama al microservicio enviando como parámetro la url y el header 
-            ms3 = requests.get(url_microservice3, headers=header_m3)
-            # Se convierte la respuesta a json
-            json = ms3.json()
-            # Se crea el json que será enviado al template
-            json_result = {'ms3': json}
-        elif int(api) == 4:
-            # Se llama al microservicio enviando como parámetro la url y el header 
-            ms4 = requests.get(url_microservice4, headers=header_m4)
-            # Se convierte la respuesta a json
-            json = ms4.json()
-            # Se crea el json que será enviado al template
-            json_result = {'ms4': json}
-        elif int(api) == 5:
-            # Se llama al microservicio enviando como parámetro la url y el header 
-            ms5 = requests.get(url_microservice5, headers=header_m5)
-            # Se convierte la respuesta a json
-            json = ms5.json()
-            # Se crea el json que será enviado al template
-            json_result = {'ms5': json}
+#         if int(api) == 1:
+#             # Se llama al microservicio enviando como parámetro la url y el header
+#             ms1 = requests.get(url_microservice1, headers=headers_m1)
+#             # Se convierte la respuesta a json
+#             json = ms1.json()
+#             # Se crea el json que será enviado al template
+#             json_result = {'ms1': json}
+#         elif int(api) == 2:
+#             # Se llama al microservicio enviando como parámetro la url y el header
+#             ms2 = requests.get(url_microservice2, headers=header_m2)
+#             # Se convierte la respuesta a json
+#             json = ms2.json()
+#             # Se crea el json que será enviado al template
+#             json_result = {'ms2': json}
+#         elif int(api) == 3:
+#             # Se llama al microservicio enviando como parámetro la url y el header 
+#             ms3 = requests.get(url_microservice3, headers=header_m3)
+#             # Se convierte la respuesta a json
+#             json = ms3.json()
+#             # Se crea el json que será enviado al template
+#             json_result = {'ms3': json}
+#         elif int(api) == 4:
+#             # Se llama al microservicio enviando como parámetro la url y el header 
+#             ms4 = requests.get(url_microservice4, headers=header_m4)
+#             # Se convierte la respuesta a json
+#             json = ms4.json()
+#             # Se crea el json que será enviado al template
+#             json_result = {'ms4': json}
+#         elif int(api) == 5:
+#             # Se llama al microservicio enviando como parámetro la url y el header 
+#             ms5 = requests.get(url_microservice5, headers=header_m5)
+#             # Se convierte la respuesta a json
+#             json = ms5.json()
+#             # Se crea el json que será enviado al template
+#             json_result = {'ms5': json}
         
-        return render_template("index.html", result=json_result)
+#         return render_template("index.html", result=json_result)
     
-    # Si no se recibe, simplemente se regresa el template index.html sin datos.
-    else:
-        json_result = {}
-        return render_template("index.html", result=json_result)
+#     # Si no se recibe, simplemente se regresa el template index.html sin datos.
+#     else:
+#         json_result = {}
+#         return render_template("index.html", result=json_result)
 
-@app.route("/list", methods=['GET'])
+@app.route("/", methods=['GET'])
 def list():
     respuesta = requests.get('http://host.docker.internal:8080/catalog/product', headers=header_m4)
     return render_template("list.html", result=respuesta.json())
@@ -126,26 +126,9 @@ def list():
 @app.route("/catalog/product/<id>/", methods=['GET','POST'])
 def detail(id):
     if request.method=="POST":
-        # data=request.form.to_dict(flat=False)
-        # print(request.form)
-        # data = request.get_data()
-        # data = request.form.to_dict(flat=False)
-        # data_chido = jsonify(data)
-        # data = jsonify(request.get_json(force=True))
-        # data='[{ "product_id":'+request.form['product_id']+', "quantity":'+request.form['quantity']}]
-        # data='{"product_id":'+request.form.get('product_id')+', "quantity":'+request.form.get('quantity')+'}'
-        # http://ejohn.org/blog/ecmascript-5-strict-mode-json-and-more/
-        # data = JSON.stringify(data)
-        # data = str(request.form)
-        # data_chido = json.loads(data)
-        # dataJason = json.dumps(data)
-
-        # data_chido = request.get_data(parse_form_data=True)
-        # data = request.form.to_dict(flat=False)
-        header_mPrueba = {"authorization": key_m4, 'Content-Type': 'application/json'}
-        data = {'product_id':1,'quantity':3}
+        data=request.json
         print(data)
-        respuesta= requests.post('http://host.docker.internal:8080/catalog/product/cart/', headers=header_mPrueba, json=json.dumps(data))
+        respuesta= requests.post('http://host.docker.internal:8080/catalog/product/cart/', headers=header_m4, data=data)
         print(respuesta)
         return redirect(url_for("list"))
     respuesta = requests.get('http://host.docker.internal:8080/catalog/product/'+id+'/', headers=header_m4)
