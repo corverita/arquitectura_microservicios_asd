@@ -87,7 +87,7 @@ class CatalogViewSet(viewsets.ViewSet):
 class CarritoItemViewSet(viewsets.ViewSet):
 
     def add(self,request):
-        body=json.loads(request.body)
+        body=request.json
         product_id=body['product_id']
         product=get_object_or_404(Product,id=product_id)
         quantity=body['quantity']
@@ -110,9 +110,8 @@ class CarritoItemViewSet(viewsets.ViewSet):
         return redirect("cart:product")
 
     def remove_item(self,request):
-        body=json.loads(request.body)
-        product_id=body['product_id']
-        product=Product.objects.get(id=product_id)
+        product_id=request.data.get('product_id')
+        product=Product.objects.get(name=product_id)
         carrito_item=get_object_or_404(CarritoItem,product=product)
         carrito_item.delete()
         return redirect("cart:product")

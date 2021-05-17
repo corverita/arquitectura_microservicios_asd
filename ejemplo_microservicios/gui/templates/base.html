@@ -27,16 +27,16 @@
         </div>
         
         <div class="cart" style="float:right; margin-right:10px; margin-top: 20px;">
-            {% with total_items=cart|length %}
-                {% if total_items > 0 %}
-                    Your cart: 
-                    <!-- <a href="">
-                        
-                    </a> -->
+            <a href="/cart/">
+                {% if result['sum_cart'] %}
+                Your cart: 
+                ${{ result['sum_cart'] }}
+                items:
+                {{  result['quantity_cart']}}
                 {% else %}
-                    Your cart is empty.
+                Your cart is empty.
                 {% endif %}
-            {% endwith %}
+            </a>
         </div>
 
         <div style="float:right; margin-right:5px; margin-top: 20px;">

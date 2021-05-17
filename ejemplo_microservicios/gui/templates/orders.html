@@ -1,0 +1,56 @@
+{% extends "./base.html" %}
+
+{% block title %}
+Order details
+{% endblock %}
+
+{% block content %}
+<h1>Your shopping cart</h1>
+<form action="" method="POST">
+    <table class="cart">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Remove</th>
+                <th>Unit price</th>                
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in result['json'] %}
+            <tr>
+                <td>
+                    <a href="">
+                        <img src="{{ url_for('static', filename=item.image) }}">
+                    </a>
+                </td>
+                <td>{{ item.product_name }}</td>
+                <td>
+                    {{item.quantity}}
+                </td>
+                <td>
+                    <input type="checkbox" name="items" value="{{item.order_id}},{{item.id}}">
+                </td>
+                <td class="num">${{ item.price }}</td>
+                <td class="num">${{ item.total_item_price }}</td>
+            </tr>
+        {% endfor %}
+        <tr class="total">
+            <td>Total</td>
+            <td colspan="4"></td>
+            <td class="num">${{result['total']}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class='text-right'>
+        {{ csrf_input }}
+        <button><a href="">Cancel order</a></button>
+        <button type="submit">Save</button>
+    </div>
+</form>
+
+<p class="text-right">
+</p>
+{% endblock %}

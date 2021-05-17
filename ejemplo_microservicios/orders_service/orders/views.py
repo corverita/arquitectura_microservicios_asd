@@ -1,5 +1,6 @@
+from .serializers import OrderItemSerializer
 from .models import Order,OrderItem
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets,status
@@ -13,11 +14,10 @@ class Orders_ViewSet(viewsets.ViewSet):
         body=json.loads(request.body)
         #Obtener y rellenar los datos del usuario en una Order
         informacion=body[0]
-        print(informacion['first_name'])
         order=Order(first_name=informacion['first_name'],
             last_name=informacion['last_name'],
-            email=informacion['email']
-            ,address=informacion['address'],
+            email=informacion['email'],
+            address=informacion['address'],
             city=informacion['city'],
             postal_code=informacion['postal_code'])
         order.save()
@@ -26,12 +26,16 @@ class Orders_ViewSet(viewsets.ViewSet):
         products=body[1] #tambien podríamos ponerle un nombre especifico al diccionario
         
         #Obtener los items del carrito y rellenar uno o varios OrderItem
+        print(products)
         for product in products:
-            print(product)
-            print(product['product']['id'])
-            orderI= OrderItem(order=order,product = product['product']['id'],price=product['product']['price'],quantity= product['quantity'])
+            orderI= OrderItem(order=order,
+                        product_name=product['product']['name'],
+                        image=product['product']['image'],
+                        price=product['product']['price'],
+                        quantity= product['quantity'],
+                        total_item_price=float(product['total_product'])*float(product['quantity']))
             orderI.save()
-        pass
+        return Response(status=status.HTTP_201_CREATED)
 
     # first_name = models.CharField(max_length=50)
     # last_name = models.CharField(max_length=50)
@@ -78,12 +82,25 @@ class Orders_ViewSet(viewsets.ViewSet):
     # ]
     
     def destroy(self,request):
-        pass
+        body=json.loads(request.body)
+        order_id=body['order_id']
+        order=get_object_or_404(Order,id=order_id) #Se obtiene la orden
+        order.delete()
+        return Response(status=status.HTTP_200_OK)
     
     def search(self,request):
-        body=json.loads(request.body)
-        print(body)
-        pass
+        order_id=request.POST.get('order_id')
+        order=get_object_or_404(Order,id=order_id) #Se obtiene la orden
+        order_items=OrderItem.objects.filter(order=order) #Se obtienen los articulos
+        ois = OrderItemSerializer(order_items, many=True)
+        return Response(ois.data)
     
     def update(self,request):
-        pass
+        body = json.loads(request.body)
+        orderId = body[0]
+        for pos in body[0]:
+            orderItemId = body[0][pos]
+            orderItem = get_object_or_404(OrderItem,id=orderItemId);
+            orderItem.delete()
+            
+        return Response(status = status.HTTP_200_OK)

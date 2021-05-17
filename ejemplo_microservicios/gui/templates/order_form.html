@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Order search
+{% endblock %}
+
+{% block content %}
+    {% if message %}
+          <div class = "alert alert-error">
+              {{message}}
+          </div>
+    {% endif %}
+    <h1>Order search</h1>
+    <form action="." method="post" class="order-form">
+        {{ csrf_input }}
+        Order ID
+        <input type="text" name="order_id">
+        <p><input type="submit" value="Find Order"></p>
+    </form>
+{% endblock %}
