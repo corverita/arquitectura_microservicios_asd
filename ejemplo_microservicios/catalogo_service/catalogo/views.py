@@ -29,7 +29,7 @@
 #
 #--------------------------------------------------------------------------------------------------
 
-from .serializers import CarritoItemSerializer, ProductSerializer
+from .serializers import CarritoItemSerializer, ProductSerializer, CategorySerializer
 from django.shortcuts import redirect, render, get_object_or_404
 from rest_framework.response import Response
 from .models import CarritoItem, Category, Product
@@ -131,3 +131,20 @@ class CarritoItemViewSet(viewsets.ViewSet):
         # Se crea el serializer y se envía como response
         serializer_cart = CarritoItemSerializer(carrito, many=True)
         return Response(serializer_cart.data)
+
+
+class CategoriaViewSet(viewsets.ViewSet):
+
+    def list(self, request):
+        # Se obtiene la lista de productos
+        categoria = Category.objects.all()
+        # Se crea el serializer y se envía como response
+        serializer_product = CategorySerializer(categoria, many=True)
+        return Response(serializer_product.data)
+
+class ProductCategoryViewSet(viewsets.ViewSet):
+    def list(self, request,id):
+        categoria=get_object_or_404(Category, id=id)
+        products=Product.objects.filter(category=categoria)
+        serializer=ProductSerializer(products,many=True)
+        return Response(serializer.data)

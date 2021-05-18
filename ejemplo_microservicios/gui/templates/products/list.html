@@ -9,18 +9,18 @@
         <h3>Categories</h3>
         <ul>
             <li {% if not category %}class="selected"{% endif %}>
-                <a href="">All</a>
+                <a href="/">All</a>
             </li>
-        <!-- {% for c in categories %}
-            <li {% if category.slug == c.slug %}class="selected"{% endif %}>
-                <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+        {% for c in result['categories'] %}
+            <li>
+                <a href="/catalog/category/{{c.id}}">{{ c.name }}</a>
             </li>
-        {% endfor %} -->
+        {% endfor %}
         </ul>
     </div>
     <div id="main" class="product-list">
         <h1>{% if category %}{{ category.name }}{% else %}Products{% endif %}</h1>
-        {% for product in result %}
+        {% for product in result['products'] %}
             <div class="item">
                 <div>
                     <a href="{{ product.get_absolute_url }}">

@@ -15,6 +15,11 @@ urlpatterns = [
     path('product/<int:pk>/', CatalogViewSet.as_view({
         'get': 'product_detail',
     })),
-    
+    path('product/category/', CategoriaViewSet.as_view({
+        'get': 'list',
+    })),
+    path('product/category/<int:id>/',ProductCategoryViewSet.as_view({
+        'get':'list'
+    }))
 ]
     

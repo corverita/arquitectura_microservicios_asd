@@ -21,6 +21,7 @@ RUN mkdir -p /usr/api
 RUN mkdir -p /usr/api/logs
 RUN mkdir -p /var/log/supervisor
 
+
 # Se indica el directorio de trabajo
 WORKDIR /usr/api
 
@@ -36,6 +37,11 @@ RUN pip install -r requirements.txt
 
 # Se expone el puerto 49001 para acceder a la aplicación
 EXPOSE 49004
+
+RUN chown www-data:www-data /usr/api/
+RUN chown www-data:www-data /usr/api/db.sqlite3
+RUN chmod 777 /usr/api
+RUN chmod 777 /usr/api/db.sqlite3
 
 # Se ejecuta el archivo supervisord que inicia el micro servicio en django
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

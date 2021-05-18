@@ -12,7 +12,7 @@
 #   
 #                                             gui.py
 #           +-----------------------+-------------------------+------------------------+
-#           |  Nombre del elemento  |     Responsabilidad     |      Propiedades       |
+#           |  Nombre del elemento  |  {{    Responsabilid }}ad     |      Propiedades       |
 #           +-----------------------+-------------------------+------------------------+
 #           |                       |  - Porporcionar la in-  | - Consume servicios    |
 #           |          GUI          |    terfaz gráfica con la|   para proporcionar    |
@@ -120,8 +120,25 @@ url_microservice5 = 'http://172.10.0.8:8080/orders/order'
 
 @app.route("/", methods=['GET'])
 def list():
-    respuesta = requests.get('http://host.docker.internal:8080/catalog/product', headers=header_m4)
-    return render_template("list.html", result=respuesta.json())
+    products = requests.get('http://host.docker.internal:8080/catalog/product', headers=header_m4)
+    categories = requests.get('http://host.docker.internal:8080/catalog/product/category/', headers=header_m4)
+    respuesta = {
+        'products':products.json(),
+        'categories':categories.json()
+    }
+
+    return render_template("/products/list.html", result=respuesta)
+
+@app.route("/catalog/category/<id>/", methods=['GET'])
+def list_id(id):
+    products = requests.get('http://host.docker.internal:8080/catalog/product/category/'+id+'/', headers=header_m4)
+    print(products)
+    categories = requests.get('http://host.docker.internal:8080/catalog/product/category/', headers=header_m4)
+    respuesta = {
+        'products':products.json(),
+        'categories':categories.json()
+    }
+    return render_template("/products/list.html", result=respuesta)
 
 @app.route("/catalog/product/<id>/", methods=['GET','POST'])
 def detail(id):
@@ -140,21 +157,26 @@ def detail(id):
         print(respuesta)
         return redirect(url_for("list"))
     respuesta = requests.get('http://host.docker.internal:8080/catalog/product/'+id+'/', headers=header_m4)
-    return render_template("detail.html", result=respuesta.json())
+    return render_template("/products/detail.html", result=respuesta.json())
 
 @app.route("/orders/order/", methods=['GET', 'POST'])
 def search():
+    carrito=requests.get('http://host.docker.internal:8080/catalog/product/cart/', headers=header_m4)
+    json_carrito=carrito.json()
+    suma_carrito=0.0
+    cantidad=0
+    for product in json_carrito:
+        suma_carrito+=float(product['total_product'])
+        cantidad+=1
+    data={
+        "sum_cart":suma_carrito,
+        "quantity_cart":cantidad
+    }
     if request.method == "POST":
-        carrito=requests.get('http://host.docker.internal:8080/catalog/product/cart/', headers=header_m4)
-        json_carrito=carrito.json()
-        suma_carrito=0.0
-        cantidad=0
-        for product in json_carrito:
-            suma_carrito+=float(product['total_product'])
-            cantidad+=1
-
         orden = requests.post('http://host.docker.internal:8080/orders/order/get/', headers=header_m5, data=request.form)
         json=orden.json()
+        if "detail" in json:
+            return render_template("orders/order_form.html", result=data)
         sum=0.0
         for product in json:
             sum+=float(product['total_item_price'])
@@ -164,8 +186,9 @@ def search():
             "sum_cart":suma_carrito,
             "quantity_cart":cantidad
         }
-        return render_template('orders.html', result=data)
-    return render_template("order_form.html")
+        return render_template('orders/orders.html', result=data)
+    else:
+        return render_template("/orders/order_form.html", result=data)
 
 @app.route("/cart/", methods=['GET', 'POST'])
 def cart():
@@ -181,7 +204,7 @@ def cart():
         "sum_cart":suma_carrito,
         "cart_items":carrito_json
     }
-    return render_template("cart/detail.html", result=data)
+    return render_template("/cart/detail.html", result=data)
 
 
 @app.route("/cart/remove/", methods=['POST'])
@@ -204,7 +227,9 @@ def cart_delete():
         "sum_cart":suma_carrito,
         "cart_items":carrito_json
     }
-    return render_template("cart/detail.html", result=data_env)
+    return render_template("/cart/detail.html", result=data_env)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
