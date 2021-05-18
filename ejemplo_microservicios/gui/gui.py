@@ -42,10 +42,10 @@ header_m2 = {"authorization": key_m2}
 key_m3 = "<microservice3_key>"
 header_m3 = {"authorization": key_m3}
 
-key_m4 = "5740799c5a004461ab68c30552796218"
+key_m4 = "16413aec64914349be49b3ffcd78c9ed"
 header_m4 = {"authorization": key_m4}
 
-key_m5 = "771cf970112d446b95fce6e68069edb4"
+key_m5 = "7485e8552fe14105b4456d4bc45e1dee"
 header_m5 = {"authorization": key_m5}
 
 
@@ -125,8 +125,16 @@ def list():
 
 @app.route("/catalog/product/<id>/", methods=['GET','POST'])
 def detail(id):
-    if request.method=="POST":
-        data=request.json
+    print(request.method)
+    if request.method == 'POST':
+        product_id = request.form['product_id']
+        quantity = request.form['quantity']
+
+        data = {
+            "product_id": product_id,
+            "quantity": quantity
+        }
+        #data=request.json
         print(data)
         respuesta= requests.post('http://host.docker.internal:8080/catalog/product/cart/', headers=header_m4, data=data)
         print(respuesta)

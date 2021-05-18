@@ -87,26 +87,39 @@ class CatalogViewSet(viewsets.ViewSet):
 class CarritoItemViewSet(viewsets.ViewSet):
 
     def add(self,request):
-        body=request.body
-        product_id=body['product_id']
+        print(request.data)
+        #body=request.body
+        product_id=int(request.data['product_id'])
         product=get_object_or_404(Product,id=product_id)
-        quantity=body['quantity']
+        quantity=int(request.data['quantity'])
         quantity=int(quantity)
         total=int(product.price)*int(quantity)
-        
-        carrito=CarritoItem(quantity=quantity,product=product,total_product=total)
+
+        print(product_id)
+
+        data = {
+            'quantity': quantity,
+            'product': product.id,
+            'total_product': total,
+        }
+
+        carrito = CarritoItem(quantity=quantity, product=product, total_product=total)
+        #carrito.is_valid(raise_exception=True)
+        carrito.save()
 
         for item in CarritoItem.objects.all():
-            if item.product==product:
+            print(item.product)
+            print(product)
+            if item.product == product:
                 item.quantity += quantity
                 item.total_product = product.price*item.quantity
                 product.stock -= quantity
                 product.save()
                 item.save()
                 return redirect("cart:product")
-        product.stock -= quantity
-        product.save()
-        carrito.save()
+        #product.stock -= quantity
+        #product.save()
+        #carrito.save()
         return redirect("cart:product")
 
     def remove_item(self,request):
