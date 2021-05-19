@@ -23,9 +23,7 @@
         {% for product in result['products'] %}
             <div class="item">
                 <div>
-                    <a href="{{ product.get_absolute_url }}">
                         <img src="{{ url_for('static', filename=product.image) }}">
-                    </a>
                 </div>
                 <a href="/catalog/product/{{product.id}}">{{ product.name }}</a><br>
                 ${{ product.price }}

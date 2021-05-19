@@ -27,25 +27,26 @@
         </div>
         
         <div class="cart" style="float:right; margin-right:10px; margin-top: 20px;">
+            
             {% if result['quantity_cart'] >0 %}
-            <a href="/cart/">
-                Your cart: 
-                ${{ result['sum_cart'] }}
-                items:
-                {{  result['quantity_cart']}}
-            </a>
-                {% else %}
+                <a href="/cart/">
+                    Your cart: 
+                    ${{ result['sum_cart'] }}
+                    items:
+                    {{  result['quantity_cart']}}
+                </a>
+            {% else %}
                 Your cart is empty.
-                {% endif %}
+            {% endif %}
         </div>
 
         <div style="float:right; margin-right:5px; margin-top: 20px;">
             <img class="logo" width="30px" src="{{ url_for ('static', filename='img/cart.png') }}">
         </div>
 
-        <!-- <div class="cart" style="float:right; margin-right:30px; margin-top: 20px;">
-            <a href="">Cancel order</a>
-        </div> -->
+        <div class="cart" style="float:right; margin-right:30px; margin-top: 20px;">
+            <a href="/orders/search/" style="margin-top: 20px">Cancel order</a>
+        </div>
 
     </div>
     <div id="content">

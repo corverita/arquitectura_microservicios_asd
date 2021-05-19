@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block content %}
-    {% if message %}
+    {% if result['mensaje'] %}
           <div class = "alert alert-error">
-              {{message}}
+              {{result['mensaje']}}
           </div>
     {% endif %}
     <h1>Order search</h1>

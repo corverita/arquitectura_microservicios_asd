@@ -92,8 +92,13 @@ class Orders_ViewSet(viewsets.ViewSet):
                         quantity= request.data['quantity'],
                         total_item_price=float(request.data['total_product']))
         orderI.save()
-        self.send_correo(order.id)
         return Response(status=status.HTTP_201_CREATED)
+    
+    def enviar_correo(self,request):
+        order_id=request.data['order_id']
+        order=get_object_or_404(Order,id=order_id)
+        self.send_correo(order.id)
+        return Response(status=status.HTTP_200_OK)
     
     def destroy(self,request):
         order_id=request.data['order_id']
@@ -105,21 +110,23 @@ class Orders_ViewSet(viewsets.ViewSet):
     def search(self,request):
         order_id=request.POST.get('order_id')
         order=get_object_or_404(Order,id=order_id) #Se obtiene la orden
-        order_items=OrderItem.objects.filter(order=order) #Se obtienen los articulos
-        ois = OrderItemSerializer(order_items, many=True)
-        return Response(ois.data)
+        if self.verify_expired_time(order_id):
+            order_items=OrderItem.objects.filter(order=order) #Se obtienen los articulos
+            ois = OrderItemSerializer(order_items, many=True)
+            return Response(ois.data)
+        else:
+            return Response(status= status.HTTP_403_FORBIDDEN)
     
     def update(self,request):
-        #lista=request.data['lista']
         
         items_deleted=[]
 
-        for item in request.data:
-            orderI = OrderItem.objects.get(id=item)
+        for i, value in request.data.items():
+            orderI= OrderItem.objects.get(id=value)
             items_deleted.append(orderI)
             orderI.delete()
-            
-        order = Order.object.get(order= items_deleted.get(0).order)
+        
+        order = Order.objects.get(id= items_deleted[0].order.id)
         order_id=order.id
         items_restantes = OrderItem.objects.filter(order=order)
         ##Enviar correo de actualización
@@ -127,10 +134,21 @@ class Orders_ViewSet(viewsets.ViewSet):
             self.send_email('partially cancelled','cancelation',order_id, items_deleted)
             self.send_email('updated', 'order',order_id, items_restantes)
         else:
-            self.send_email('cancelled','cancelation',order_id)
+            self.send_email('cancelled','cancelation',order_id,items_deleted)
             order.delete()
         
         return Response(status = status.HTTP_200_OK)
+    
+
+    def verify_expired_time(self,id):
+        order=Order.objects.get(id=id)
+        hora=timezone.now()
+        offset=hora-order.created
+        horas_diferencia=offset.days*24+(offset.seconds/3600)
+        if(horas_diferencia<24):
+            return True
+        else:
+            return False
     
     
     

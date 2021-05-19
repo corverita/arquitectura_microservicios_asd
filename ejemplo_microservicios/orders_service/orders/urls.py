@@ -16,4 +16,7 @@ urlpatterns = [
     path("create/order-item/",Orders_ViewSet.as_view({
         'post':'create_order_item'
     })),
+    path("send-mail/",Orders_ViewSet.as_view({
+        'post':'enviar_correo'
+    })),
 ]

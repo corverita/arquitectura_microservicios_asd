@@ -204,18 +204,32 @@ def search():
             "order_id":order_id
         }
         orden = requests.post('http://host.docker.internal:8080/orders/order/get/', headers=header_m5, data=data)
-        json=orden.json()
-        if "detail" in json:
-            data={
+        print(orden)
+        json_orden=orden.json()
+        data={
                 "sum_cart":suma_carrito,
                 "quantity_cart":cantidad
             }
+        print(orden.status_code)
+        if str(orden.status_code)=="403":
+            data={
+                "sum_cart":suma_carrito,
+                "quantity_cart":cantidad,
+                "mensaje":"Tiempo de cancelación excedido."
+            }
+            return render_template("orders/order_form.html", result=data)
+        if str(orden.status_code)=="404":
+            data={
+                "sum_cart":suma_carrito,
+                "quantity_cart":cantidad,
+                "mensaje":"Orden no encontrada."
+            }
             return render_template("orders/order_form.html", result=data)
         sum=0.0
-        for product in json:
+        for product in json_orden:
             sum+=float(product['total_item_price'])
         data={
-            "json":json,
+            "json":json_orden,
             "total":sum,
             "sum_cart":suma_carrito,
             "quantity_cart":cantidad,
@@ -260,6 +274,12 @@ def create():
                 "total_product":item['total_product']
             }
             order = requests.post('http://host.docker.internal:8080/orders/order/create/order-item/', headers=header_m5, data=data)
+
+        data_mail = {
+            "order_id":order_json['id']
+        }
+        
+        correo = requests.post('http://host.docker.internal:8080/orders/order/send-mail/',headers= header_m5, data=data_mail )
         carrito=requests.get('http://host.docker.internal:8080/catalog/cart/', headers=header_m4)
         data={
             "order":order_json,
@@ -284,10 +304,15 @@ def cancel_order(id):
 
 @app.route("/orders/cancel/",methods=['POST']) 
 def cancel_order_item():
+    
+    items_json = {}
     items=request.form.getlist("items")
-    items_enviar=json.dumps(items)
-    print(items_enviar)
-    respuesta=requests.put('http://host.docker.internal:8080/orders/order/a/', headers=header_m5, data=items_enviar)
+    for i in range(len(items)):
+        items_json[i] = items[i]
+    
+    print(items_json)
+
+    respuesta=requests.put('http://host.docker.internal:8080/orders/order/a/', headers=header_m5, data=items_json)
     print(respuesta)
     return redirect(url_for("list"))
 
