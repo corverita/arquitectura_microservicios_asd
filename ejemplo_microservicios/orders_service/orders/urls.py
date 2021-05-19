@@ -4,7 +4,6 @@ from .views import *
 
 urlpatterns = [
     path('a/', Orders_ViewSet.as_view({
-        'post': 'create', #create
         'delete':'destroy', #cancel order
         'put':'update' #update order
     })),

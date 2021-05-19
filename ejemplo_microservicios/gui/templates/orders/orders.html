@@ -6,7 +6,7 @@ Order details
 
 {% block content %}
 <h1>Your shopping cart</h1>
-<form action="" method="POST">
+<form action="/orders/cancel/" method="POST">
     <table class="cart">
         <thead>
             <tr>
@@ -19,6 +19,7 @@ Order details
             </tr>
         </thead>
         <tbody>
+        <input type="hidden" name="order_id" value="{{result['json'][0]['order']['id'] }}">
         {% for item in result['json'] %}
             <tr>
                 <td>
@@ -31,7 +32,7 @@ Order details
                     {{item.quantity}}
                 </td>
                 <td>
-                    <input type="checkbox" name="items" value="{{item.order_id}},{{item.id}}">
+                    <input type="checkbox" name="items" value="{{item.id}}">
                 </td>
                 <td class="num">${{ item.price }}</td>
                 <td class="num">${{ item.total_item_price }}</td>
@@ -46,7 +47,7 @@ Order details
     </table>
     <div class='text-right'>
         {{ csrf_input }}
-        <button><a href="">Cancel order</a></button>
+        <button><a href="/orders/cancel/{{result['json'][0]['order']['id'] }}">Cancel order</a></button>
         <button type="submit">Save</button>
     </div>
 </form>

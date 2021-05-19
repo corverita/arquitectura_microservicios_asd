@@ -203,10 +203,13 @@ def search():
         data={
             "order_id":order_id
         }
-        print(data)
         orden = requests.post('http://host.docker.internal:8080/orders/order/get/', headers=header_m5, data=data)
         json=orden.json()
         if "detail" in json:
+            data={
+                "sum_cart":suma_carrito,
+                "quantity_cart":cantidad
+            }
             return render_template("orders/order_form.html", result=data)
         sum=0.0
         for product in json:
@@ -215,7 +218,8 @@ def search():
             "json":json,
             "total":sum,
             "sum_cart":suma_carrito,
-            "quantity_cart":cantidad
+            "quantity_cart":cantidad,
+            "order_id":order_id
         }
         return render_template('orders/orders.html', result=data)
     else:
@@ -267,6 +271,25 @@ def create():
         return render_template('/orders/created.html', result=data)
     else:
         return render_template("/cart/create.html", result=data)
+        
+        
+@app.route("/orders/cancel/<id>",methods=['GET']) 
+def cancel_order(id):
+    json = {
+        "order_id":id,
+    }
+    carrito=requests.delete('http://host.docker.internal:8080/orders/order/a/', headers=header_m5, data=json)
+    print(carrito)
+    return redirect(url_for("list"))
+
+@app.route("/orders/cancel/",methods=['POST']) 
+def cancel_order_item():
+    items=request.form.getlist("items")
+    items_enviar=json.dumps(items)
+    print(items_enviar)
+    respuesta=requests.put('http://host.docker.internal:8080/orders/order/a/', headers=header_m5, data=items_enviar)
+    print(respuesta)
+    return redirect(url_for("list"))
 
 # @app.route("/orders/create/", methods=['GET', 'POST'])
 # def create():
