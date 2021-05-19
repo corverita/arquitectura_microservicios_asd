@@ -30,7 +30,6 @@ from flask import jsonify
 
 app = Flask(__name__)
 CORS(app)
-
 # Se definen las llaves de cada microservicio
 
 key_m1 = "<microservice1_key>"
@@ -42,10 +41,10 @@ header_m2 = {"authorization": key_m2}
 key_m3 = "<microservice3_key>"
 header_m3 = {"authorization": key_m3}
 
-key_m4 = "16413aec64914349be49b3ffcd78c9ed"
+key_m4 = "b22cad0965fa467ca14809ae12eb2ec7"
 header_m4 = {"authorization": key_m4}
 
-key_m5 = "7485e8552fe14105b4456d4bc45e1dee"
+key_m5 = "0a958fe4001e45ff865ea7e70094b1d2"
 header_m5 = {"authorization": key_m5}
 
 
@@ -120,48 +119,75 @@ url_microservice5 = 'http://172.10.0.8:8080/orders/order'
 
 @app.route("/", methods=['GET'])
 def list():
+    carrito=requests.get('http://host.docker.internal:8080/catalog/cart/', headers=header_m4)
+    json_carrito=carrito.json()
+    suma_carrito=0.0
+    cantidad=0
+    for product in json_carrito:
+        suma_carrito+=float(product['total_product'])
+        cantidad+=1
     products = requests.get('http://host.docker.internal:8080/catalog/product', headers=header_m4)
-    categories = requests.get('http://host.docker.internal:8080/catalog/product/category/', headers=header_m4)
+    categories = requests.get('http://host.docker.internal:8080/catalog/categories/', headers=header_m4)
     respuesta = {
         'products':products.json(),
-        'categories':categories.json()
+        'categories':categories.json(),
+        "sum_cart":suma_carrito,
+        "quantity_cart":cantidad
     }
 
     return render_template("/products/list.html", result=respuesta)
 
 @app.route("/catalog/category/<id>/", methods=['GET'])
 def list_id(id):
+    carrito=requests.get('http://host.docker.internal:8080/catalog/cart/', headers=header_m4)
+    json_carrito=carrito.json()
+    suma_carrito=0.0
+    cantidad=0
+    for product in json_carrito:
+        suma_carrito+=float(product['total_product'])
+        cantidad+=1
     products = requests.get('http://host.docker.internal:8080/catalog/product/category/'+id+'/', headers=header_m4)
-    print(products)
-    categories = requests.get('http://host.docker.internal:8080/catalog/product/category/', headers=header_m4)
+    categories = requests.get('http://host.docker.internal:8080/catalog/categories/', headers=header_m4)
     respuesta = {
         'products':products.json(),
-        'categories':categories.json()
+        'categories':categories.json(),
+        "sum_cart":suma_carrito,
+        "quantity_cart":cantidad
     }
     return render_template("/products/list.html", result=respuesta)
 
 @app.route("/catalog/product/<id>/", methods=['GET','POST'])
 def detail(id):
-    print(request.method)
+    carrito=requests.get('http://host.docker.internal:8080/catalog/cart/', headers=header_m4)
+    json_carrito=carrito.json()
+    suma_carrito=0.0
+    cantidad=0
+    for product in json_carrito:
+        suma_carrito+=float(product['total_product'])
+        cantidad+=1
     if request.method == 'POST':
         product_id = request.form['product_id']
         quantity = request.form['quantity']
-
         data = {
             "product_id": product_id,
             "quantity": quantity
         }
-        #data=request.json
-        print(data)
-        respuesta= requests.post('http://host.docker.internal:8080/catalog/product/cart/', headers=header_m4, data=data)
-        print(respuesta)
+        respuesta= requests.post('http://host.docker.internal:8080/catalog/cart/', headers=header_m4, data=data)
         return redirect(url_for("list"))
     respuesta = requests.get('http://host.docker.internal:8080/catalog/product/'+id+'/', headers=header_m4)
-    return render_template("/products/detail.html", result=respuesta.json())
+    producto=respuesta.json()
+    categoria=requests.get('http://host.docker.internal:8080/catalog/category/'+str(producto['category'])+'/', headers=header_m4)
+    datos={
+        "product":producto,
+        "category":categoria.json(),
+        "sum_cart":suma_carrito,
+        "quantity_cart":cantidad
+    }
+    return render_template("/products/detail.html", result=datos)
 
-@app.route("/orders/order/", methods=['GET', 'POST'])
+@app.route("/orders/search/", methods=['GET', 'POST'])
 def search():
-    carrito=requests.get('http://host.docker.internal:8080/catalog/product/cart/', headers=header_m4)
+    carrito=requests.get('http://host.docker.internal:8080/catalog/cart/', headers=header_m4)
     json_carrito=carrito.json()
     suma_carrito=0.0
     cantidad=0
@@ -173,7 +199,12 @@ def search():
         "quantity_cart":cantidad
     }
     if request.method == "POST":
-        orden = requests.post('http://host.docker.internal:8080/orders/order/get/', headers=header_m5, data=request.form)
+        order_id=request.form['order_id']
+        data={
+            "order_id":order_id
+        }
+        print(data)
+        orden = requests.post('http://host.docker.internal:8080/orders/order/get/', headers=header_m5, data=data)
         json=orden.json()
         if "detail" in json:
             return render_template("orders/order_form.html", result=data)
@@ -190,9 +221,98 @@ def search():
     else:
         return render_template("/orders/order_form.html", result=data)
 
+@app.route("/orders/create/", methods=['GET', 'POST'])
+def create():
+    carrito=requests.get('http://host.docker.internal:8080/catalog/cart/', headers=header_m4)
+    json_carrito=carrito.json()
+    suma_carrito=0.0
+    cantidad=0
+    for product in json_carrito:
+        suma_carrito+=float(product['total_product'])
+        cantidad+=1
+    data={
+        "cart":json_carrito,
+        "sum_cart":suma_carrito,
+        "quantity_cart":cantidad
+    }
+    if request.method == "POST":
+        info={
+            'first_name':request.form['first_name'],
+            'last_name':request.form['last_name'],
+            'email':request.form['email'],
+            'address':request.form['address'],
+            'postal_code':request.form['postal_code'],
+            'city':request.form['city']
+        }
+        order=requests.post('http://host.docker.internal:8080/orders/order/create/order/', headers=header_m5, data=info)
+        order_json=order.json()
+        for item in json_carrito:
+            data={
+                "order":order_json['id'],
+                "name":item['product']['name'],
+                "image":item['product']['image'],
+                "price":item['product']['price'],
+                "quantity":item['quantity'],
+                "total_product":item['total_product']
+            }
+            order = requests.post('http://host.docker.internal:8080/orders/order/create/order-item/', headers=header_m5, data=data)
+        carrito=requests.get('http://host.docker.internal:8080/catalog/cart/', headers=header_m4)
+        data={
+            "order":order_json,
+            "cart":json_carrito,
+            "sum_cart":suma_carrito,
+            "quantity_cart":0
+        }
+        requests.delete("http://host.docker.internal:8080/catalog/cart/clear", headers=header_m4)
+        return render_template('/orders/created.html', result=data)
+    else:
+        return render_template("/cart/create.html", result=data)
+
+# @app.route("/orders/create/", methods=['GET', 'POST'])
+# def create():
+#     carrito=requests.get('http://host.docker.internal:8080/catalog/cart/', headers=header_m4)
+#     json_carrito=carrito.json()
+#     suma_carrito=0.0
+#     cantidad=0
+#     for product in json_carrito:
+#         suma_carrito+=float(product['total_product'])
+#         cantidad+=1
+#     data={
+#         'cart':json_carrito,
+#         "sum_cart":suma_carrito,
+#         "quantity_cart":cantidad
+#     }
+#     if request.method == "POST":
+#         info={
+#             "first_name":request.form['first_name'],
+#             "last_name":request.form['last_name'],
+#             "email":request.form['email'],
+#             "address":request.form['address'],
+#             "postal_code":request.form['postal_code'],
+#             "city":request.form['city']
+#         }
+#         cart_items=[]
+#         for item in json_carrito:
+#             cart_items.append(item)
+#         data={
+#             "informacion":info,
+#             "product":
+#         }
+#         print(cart_items)
+#         order = requests.post('http://host.docker.internal:8080/orders/order/', headers=header_m5, data=data)
+#         data={
+#             "order":order.json(),
+#             "cart":json_carrito,
+#             "sum_cart":suma_carrito,
+#             "quantity_cart":cantidad
+#         }
+#         return render_template('/orders/created.html', result=data)
+#     else:
+#         # return render_template("/cart/create.html", result=data)
+
 @app.route("/cart/", methods=['GET', 'POST'])
 def cart():
-    carrito=requests.get('http://host.docker.internal:8080/catalog/product/cart/', headers=header_m4)
+    carrito=requests.get('http://host.docker.internal:8080/catalog/cart/', headers=header_m4)
     carrito_json=carrito.json()
     suma_carrito=0.0
     cantidad=0
@@ -213,9 +333,9 @@ def cart_delete():
     data = {
         "product_id":product_id
     }
-    carrito_remove = requests.delete('http://host.docker.internal:8080/catalog/product/cart/', headers=header_m4, data=data)
+    carrito_remove = requests.delete('http://host.docker.internal:8080/catalog/cart/', headers=header_m4, data=data)
     print(carrito_remove)
-    carrito=requests.get('http://host.docker.internal:8080/catalog/product/cart/', headers=header_m4)
+    carrito=requests.get('http://host.docker.internal:8080/catalog/cart/', headers=header_m4)
     carrito_json=carrito.json()
     suma_carrito=0.0
     cantidad=0

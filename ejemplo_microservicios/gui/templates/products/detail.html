@@ -6,17 +6,16 @@
 
 {% block content %}
     <div class="product-detail">
-        <img src="{{ url_for('static', filename=result.image) }}">
-        <h1>{{ result.name }}</h1>
-        <h2><a href="{{ result.category.get_absolute_url }}">{{ result.category }}</a></h2>
-        <p class="price">${{ result.price }}</p>
-        {{result}}
+        <img src="{{ url_for('static', filename=result['product'].image) }}">
+        <h1>{{ result['product'].name }}</h1>
+        <h2><a href="/catalog/category/{{result['category']['id']}}/">{{ result['category']['name'] }}</a></h2>
+        <p class="price">${{ result['product'].price }}</p>
         <form class="form-group" action="" method="post">
             <input class="form-control" type="number" name="quantity" min="1" value="1">
-            <input type="hidden" name="product_id" value="{{result.id}}">
+            <input type="hidden" name="product_id" value="{{result['product'].id}}">
             <input type="submit" value="Add to cart">
         </form>
-        {{ result.description }}
+        {{ result['product'].description }}
     </div>
 {% endblock %}
 

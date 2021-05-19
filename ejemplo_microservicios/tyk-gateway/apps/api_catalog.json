@@ -25,8 +25,8 @@
         }
     },
     "proxy": {
-        "listen_path": "/catalog/product",
-        "target_url": "http://172.15.0.7:49004/catalog/product",
+        "listen_path": "/catalog/",
+        "target_url": "http://172.15.0.7:49004/catalog/",
         "strip_listen_path": true
     },
     "enable_batch_request_support": true

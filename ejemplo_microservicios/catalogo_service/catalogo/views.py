@@ -86,10 +86,12 @@ class CatalogViewSet(viewsets.ViewSet):
 
 class CarritoItemViewSet(viewsets.ViewSet):
 
+    def clear(self, request):
+        CarritoItem.objects.all().delete()
+        return Response(status=status.HTTP_200_OK)
+
     def add(self,request):
-        print(request.data)
-        #body=request.body
-        product_id=int(request.data['product_id'])
+        product_id=request.data['product_id']
         product=get_object_or_404(Product,id=product_id)
         quantity=int(request.data['quantity'])
         quantity=int(quantity)
@@ -142,9 +144,15 @@ class CategoriaViewSet(viewsets.ViewSet):
         serializer_product = CategorySerializer(categoria, many=True)
         return Response(serializer_product.data)
 
+    def get(self, request, id):
+        categoria=get_object_or_404(Category,id=id)
+        serializer=CategorySerializer(categoria)
+        return Response(serializer.data)
+    
 class ProductCategoryViewSet(viewsets.ViewSet):
     def list(self, request,id):
         categoria=get_object_or_404(Category, id=id)
         products=Product.objects.filter(category=categoria)
         serializer=ProductSerializer(products,many=True)
         return Response(serializer.data)
+

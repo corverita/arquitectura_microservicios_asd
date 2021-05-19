@@ -1,0 +1,21 @@
+{% extends "./base.html" %}
+
+{% block title %}
+    Thank you
+{% endblock %}
+
+{% block content %}
+    <h1>Thank you {{ result['order'].first_name }} {{ result['order'].last_name }}</h1>
+
+    <div class="order-info">
+        <h3>Your order</h3>
+        <ul>
+            {% for item in result['cart'] %}
+                <li>{{ item.quantity }}x {{ item.product.name }} <span>${{ item.total_product }}</span></li>
+            {% endfor %}
+        </ul>
+        <p>Total: ${{ result['sum_cart'] }}</p>
+    </div>
+
+    <p class="order-form">Your order has been successfully completed. Your order number is <strong>{{ result['order'].id }}</strong>.</p>
+{% endblock %}

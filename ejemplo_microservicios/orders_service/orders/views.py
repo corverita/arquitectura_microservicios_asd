@@ -1,4 +1,4 @@
-from .serializers import OrderItemSerializer
+from .serializers import OrderItemSerializer, OrderSerializer
 from .models import Order,OrderItem
 from django.shortcuts import redirect, render
 from rest_framework.response import Response
@@ -42,30 +42,69 @@ def send_email(change, action, order, order_item):
 
 class Orders_ViewSet(viewsets.ViewSet):
 
-    def create(self, request):
-        body=request.data
-        #Obtener y rellenar los datos del usuario en una Order
-        informacion=body[0]
-        order=Order(first_name=informacion['first_name'],
-            last_name=informacion['last_name'],
-            email=informacion['email'],
-            address=informacion['address'],
-            city=informacion['city'],
-            postal_code=informacion['postal_code'])
+    def create_order(self,request):
+        #informacion=request.data.get("informacion")
+        order = Order(first_name=request.data['first_name'],
+            last_name= request.data['last_name'],
+            email= request.data['email'],
+            address=request.data['address'],
+            city=request.data['city'],
+            postal_code=request.data['postal_code']
+        )
         order.save()
+        serializer=OrderSerializer(order)
+
+        return Response(serializer.data)
+
+    def create_order_item(self,request):
+        order=Order.objects.last()
+        orderI= OrderItem(order=order,
+                        product_name=request.data['name'],
+                        image=request.data['image'],
+                        price=request.data['price'],
+                        quantity= request.data['quantity'],
+                        total_item_price=float(request.data['total_product']))
+        orderI.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+    def create(self, request):
+        #Obtener y rellenar los datos del usuario en una Order
+        informacion=request.data.get('informacion')
+        # print(informacion)
+        # order=Order(
+        #     first_name=informacion['first_name'],
+        #     last_name=informacion['last_name'],
+        #     email=informacion['email'],
+        #     address=informacion['address'],
+        #     city=informacion['city'],
+        #     postal_code=informacion['postal_code'])
+        # order.save()
         
         #Relleno
-        products=body[1] #tambien podríamos ponerle un nombre especifico al diccionario
         
-        #Obtener los items del carrito y rellenar uno o varios OrderItem
+        order = Order(first_name="Martin",
+            last_name= "Luis",
+            email= "Callate@puta.com",
+            address='Chinga tu madre luis',
+            city='La verja',
+            postal_code= '98615'
+        )
+        
+        #tambien podríamos ponerle un nombre especifico al diccionario
+        products=request.data[1] 
+       
+        print(products)
+        
+        # #Obtener los items del carrito y rellenar uno o varios OrderItem
         for product in products:
-            orderI= OrderItem(order=order,
-                        product_name=product['product']['name'],
-                        image=product['product']['image'],
-                        price=product['product']['price'],
+            orderI= OrderItem(order=Order,
+                        product_name=products[product]['name'],
+                        image=products[product]['image'],
+                        price=products[product]['price'],
                         quantity= product['quantity'],
-                        total_item_price=float(product['total_product'])*float(product['quantity']))
+                        total_item_price=float(product['total_product']))
             orderI.save()
+
         return Response(status=status.HTTP_201_CREATED)
 
     # first_name = models.CharField(max_length=50)
@@ -84,7 +123,7 @@ class Orders_ViewSet(viewsets.ViewSet):
     # quantity = models.PositiveIntegerField(default=1)
     
     # [
-    #     {
+    #     "informacion": {
     #         "first_name":"Oscar",
     #         "last_name": "Rios",
     #         "email": "oscar@gmail.com",
