@@ -118,6 +118,8 @@ class CarritoItemViewSet(viewsets.ViewSet):
         product_id=request.data.get('product_id')
         product=Product.objects.get(name=product_id)
         carrito_item=get_object_or_404(CarritoItem,product=product)
+        product.stock+=carrito_item.quantity
+        product.save()
         carrito_item.delete()
         return redirect("cart:product")
 
