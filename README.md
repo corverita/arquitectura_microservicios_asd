@@ -12,7 +12,7 @@ Este sistema es un ejemplo de implementación de la arquitectura de microservici
 
 A continuación se muestra una vista estática del diseño del sistema:
 
-![Vista estática del sistema](docs/diagrama_contenedores.png)
+![Vista estática del sistema](docs/diagrama_contenedores.jpeg)
 
 ## Prerrequisitos
 
@@ -108,79 +108,48 @@ Se deben correr los siguientes comandos en la carpeta raíz del proyecto.
 A partir de este directorio deberemos acceder a la carpeta de cada microservicio para realizar la construcción.
 
 
-#### Construcción y ejecución del microservicio 1
+### Construcción y ejecución del microservicio de catalogo
+
+- Estas son algunas consideraciones a tomar en cuenta para construir y ejecutar el contenedor del microservicio 3. Si ya se llevaron acabo estos pasos que son mencionados también en el archivo README.md de la carpeta raíz, por favor omitirlos.
 
    ```shell
-   $ cd microservice1
+   $ cd catalogo_service
 
-   $ docker build -t api-python:1.0 .
+   $ docker build -t api-catalog:1.0 .
 
-   $ docker run -d --name api-python --network tyk --ip 172.15.0.4 api-python:1.0
-   
-   $ cd ..
+   $ docker run -d --name api-catalog --network tyk --ip 172.15.0.7 api-catalog:1.0
    ```
 
    En Linux:
 
    ```shell
-   $ cd microservice1
+   $ cd catalog_service
 
-   $ sudo docker build -t api-python:1.0 .
+   $ sudo docker build -t api-catalog:1.0 .
 
-   $ sudo docker run -d --name api-python --network tyk --ip 172.15.0.4 api-python:1.0
-   
-   $ cd ..
+   $ sudo docker run -d --name api-catalog --network tyk --ip 172.15.0.7 api-catalog:1.0
    ```
 
 
-#### Construcción y ejecución del microservicio 2
+#### Construcción y ejecución del microservicio de orders
 
    ```shell
-   $ cd microservice2
+   $ cd orders_service
 
-   $ docker build -t api-dart:1.0 .
+   $ docker build -t api-orders:1.0 .
 
-   $ docker run -d --name api-dart --network tyk --ip 172.15.0.5 api-dart:1.0
-
-   $ cd ..
+   $ docker run -d --name api-orders --network tyk --ip 172.15.0.8 api-orders:1.0
    ```
 
    En Linux:
 
    ```shell
-   $ cd microservice2
+   $ cd orders_service
 
-   $ sudo docker build -t api-dart:1.0 .
+   $ sudo docker build -t api-orders:1.0 .
 
-   $ sudo docker run -d --name api-dart --network tyk --ip 172.15.0.5 api-dart:1.0
-   
-   $ cd ..
+   $ sudo docker run -d --name api-orders --network tyk --ip 172.15.0.8 api-orders:1.0
    ```
-
-#### Construcción y ejecución del microservicio 3
-
-   ```shell
-   $ cd microservice3
-
-   $ docker build -t api-django:1.0 .
-
-   $ docker run -d --name api-django --network tyk --ip 172.15.0.6 api-django:1.0
-
-   $ cd ..
-   ```
-
-   En Linux:
-
-   ```shell
-   $ cd microservice3
-
-   $ sudo docker build -t api-django:1.0 .
-
-   $ sudo docker run -d --name api-django --network tyk --ip 172.15.0.6 api-django:1.0
-   
-   $ cd ..
-   ```
-
 
 ### Construcción y ejecución de la GUI
 
@@ -232,9 +201,9 @@ A partir de este directorio deberemos acceder a la carpeta de cada microservicio
         "quota_remaining": -1,
         "quota_renewal_rate": 60,
         "access_rights": {
-            "2": {
-                "api_id": "2",
-                "api_name": "Python API"
+            "5": {
+                "api_id": "5",
+                "api_name": "Catalog API"
             }
         }
     }
@@ -264,47 +233,14 @@ A partir de este directorio deberemos acceder a la carpeta de cada microservicio
         "quota_remaining": -1,
         "quota_renewal_rate": 60,
         "access_rights": {
-            "3": {
-                "api_id": "3",
-                "api_name": "Dart API"
+            "6": {
+                "api_id": "6",
+                "api_name": "Orders API"
             }
         }
     }
     ```
-
-    Damos click en el botón 'Send' y si todo funciona de forma correcta, debemos ver algo como lo que se muestra en la imagen:
-
-    <p align="center">
-        <img src="docs/tyk_respuesta.png" width="100%" height="100%">
-    </p>
-
-    Debemos guardar el valor de 'key' pues será utilizado en el código de la GUI para acceder al microservicio.
-
-
-    6. Para el tercer microservicio (Django) realizaremos los mismos pasos. En la sección de 'Body' añadiremos la siguiente información en formato JSON como se muestra en la imagen:
-
-    <p align="center">
-        <img src="docs/tyk_m3.png" width="90%" height="90%">
-    </p>
-
-    ```shell
-    {
-        "rate": 1000,
-        "per": 1,
-        "expires": 0,
-        "quota_max": -1,
-        "quota_renews": 1458667309,
-        "quota_remaining": -1,
-        "quota_renewal_rate": 60,
-        "access_rights": {
-            "4": {
-                "api_id": "4",
-                "api_name": "Django API"
-            }
-        }
-    }
-    ```
-
+    
     Damos click en el botón 'Send' y si todo funciona de forma correcta, debemos ver algo como lo que se muestra en la imagen:
 
     <p align="center">
@@ -357,9 +293,9 @@ $ curl --request POST \
         "quota_remaining": -1,
         "quota_renewal_rate": 60,
         "access_rights": {
-            "2": {
-                "api_id": "2",
-                "api_name": "Python API"
+            "5": {
+                "api_id": "5",
+                "api_name": "Catalog API"
             }
         }
     }'
@@ -379,35 +315,14 @@ $ curl --request POST \
         "quota_remaining": -1,
         "quota_renewal_rate": 60,
         "access_rights": {
-            "3": {
-                "api_id": "3",
-                "api_name": "Dart API"
+            "6": {
+                "api_id": "6",
+                "api_name": "Orders API"
             }
         }
     }'
 ```
 
-```shell
-$ curl --request POST \
-  --url http://localhost:8080/tyk/keys \
-  --header 'Content-Type: application/json' \
-  --header 'x-tyk-authorization: 352d20ee67be67f6340b4c0605b044b7' \
-  --data '{
-        "rate": 1000,
-        "per": 1,
-        "expires": 0,
-        "quota_max": -1,
-        "quota_renews": 1458667309,
-        "quota_remaining": -1,
-        "quota_renewal_rate": 60,
-        "access_rights": {
-            "4": {
-                "api_id": "4",
-                "api_name": "Django API"
-            }
-        }
-    }'
-```
 
 - Si se ejecutaron con éxito, de cada comando se obtuvo una salida como la que se muestra en la siguiente imagen:
 
@@ -513,122 +428,7 @@ $ curl --request POST \
 
 Los siguientes pasos se deberán realizar solamente cuando se desee continuar con el desarrollo de algún microservicio en alguno de los lenguajes seleccionados para este sistema.
 
-### Microservicio 1 - Python
-
-- Para el desarrollo del microservicio 1 es necesario contar con python 3.9 o superior y pip3 (las pruebas fueron realizadas con la versión 3.9.1). Se recomienda utilizar [pyenv](https://github.com/pyenv/pyenv) como manejador de versiones de python; una vez instalado se pueden seguir los siguientes comandos para instalar la versión deseada de python, esto hay que realizarlo en la raíz del repositorio:
-
-   ```shell
-   $ pyenv install 3.9.1
-   $ pyenv local 3.9.1
-   ```
-
-- Crear un ambiente virtual para manejar las dependencias ejecutando:
-   
-   ```shell
-   $ python3 -m venv venv
-   ```
-
-   en Windows:
-
-   ```shell
-   $ python3 -m venv venv
-   ```
-
-   si no funciona el comando anterior, ejecutar el siguiente:
-   ```shell
-   $ py -3 -m venv venv
-   ```
-
-   Esto creará una carpeta llamada "venv" que representa nuestro ambiente virtual y donde instalaremos todas las dependencias.
-
-   Nota: Si estamos utilizando una carpeta compartida entre una máquina virtual y nuestra máquina, se recomienda crear el entorno virtual e instalar los requerimientos fuera de la carpeta compartida.
-
-- Activamos el ambiente virtual:
-   ```shell
-   $ source venv/bin/activate
-   ```
-
-   o en Windows:
-   ```shell
-   $ venv\Scripts\activate
-   ```
-
-- Instalamos las dependencias del microservicio ejecutando:
-   ```shell
-   (venv)$ cd microservice1
-
-   (venv)$ pip3 install -r requirements.txt 
-   ```
-
-   Los paquetes que se instalarán son los siguientes:
-
-    Paquete      |  Versión  | 
-   --------------|-----------|
-    falcon       |   2.0.0   |
-    falcon-cors  |   1.1.7   |
-    gunicorn     |  20.0.4   |
-    waitress     |   2.0.0   |
-
-- Si alguno de los requerimientos necesarios no se instala correctamente, deberemos proceder a instalarlos manualmente como en el siguiente ejemplo de instalación de falcon:
-
-   ```shell
-    (venv)$ pip3 install falcon==2.0.0
-   ```
-
-
-#### Ejecución
-
-- Dentro del directorio del microservicio (microservice1) ejecutamos la aplicación en Linux:
-
-   ```shell
-   (venv)$ gunicorn hello_python.app --bind 0.0.0.0:8000
-
-   ```
-
-- En Windows:
-
-   ```shell
-   (venv)$ waitress-serve --port=8000 hello_python.app:api
-
-   ```
-
-- Para probar el microservicio podemos hacer la petición GET desde Postman como se muestra en la siguiente imagen:
-
-    <p align="center">
-        <img src="docs/prueba_m1.png" width="90%" height="90%">
-    </p>
-
-Nota: Recordar que en este caso estamos probando el microservicio sin la ayuda del contenedor de Docker ni el servicio de tyk, por lo que no nos pide ninguna llave. Esta ejecución se recomienda realizarla solamente durante desarrollo.
-
-
-### Microservicio 2 - Dart
-
-- Para el desarrollo del microservicio 2 es necesario contar con Dart 2.10.5 o superior.
-
-#### Ejecución
-
-- Entramos a la carpeta del microservicio:
-   ```shell
-   (venv)$ cd microservice2
-   ```
-
-- Es necesario tomar en cuenta que la aplicación Dart se encuentra configurada con el host y el puerto para funcionar en el contenedor de Docker. Si se desea ejecutar la aplicación en tiempo de desarrollo fuera del contenedor de Docker, es necesario cambiar el host por '0.0.0.0' y ejecutar el siguiente comando:
-
-   ```shell
-   (venv)$ dart hello_dart/app.dart 
-
-   ```
-
-- Para probar el microservicio podemos hacer la petición GET desde Postman como se muestra en la siguiente imagen:
-
-    <p align="center">
-        <img src="docs/prueba_m2.png" width="90%" height="90%">
-    </p>
-
-Nota: Recordar que en este caso estamos probando el microservicio sin la ayuda del contenedor de Docker ni el servicio de tyk, por lo que no nos pide ninguna llave. Esta ejecución se recomienda realizarla solamente durante desarrollo.
-
-
-### Microservicio 3 - Django
+### Microservicios Catalog y Orders - Django
 
 - Para el desarrollo del microservicio 3 es necesario contar con python 3.9 o superior y pip3 (las pruebas fueron realizadas con la versión 3.9.1). Se recomienda utilizar [pyenv](https://github.com/pyenv/pyenv) como manejador de versiones de python; una vez instalado se pueden seguir los siguientes comandos para instalar la versión deseada de python, esto hay que realizarlo en la raíz del repositorio:
 
@@ -670,7 +470,7 @@ Nota: Recordar que en este caso estamos probando el microservicio sin la ayuda d
 
 - Instalamos las dependencias del microservicio ejecutando:
    ```shell
-    (venv)$ cd microservice3 
+    (venv)$ cd catalogo_service ó cd orders_service
 
     (venv)$ pip3 install -r requirements.txt 
    ```
@@ -694,7 +494,7 @@ Nota: Recordar que en este caso estamos probando el microservicio sin la ayuda d
 
 #### Ejecución
 
-- Dentro del directorio del microservicio (microservice3) ejecutamos el siguiente comando:
+- Dentro del directorio del microservicio (catalogo_service/ o orders_service/) ejecutamos el siguiente comando:
    ```shell
    (venv)$ python manage.py runserver 0.0.0.0:8000 
 
@@ -796,79 +596,7 @@ Nota: Recordar que en este caso estamos probando el microservicio sin la ayuda d
 
 Es importante verificar que los contenedores se encuentran detenidos para asegurar que la construcción tenga éxito.
 
-
-### Construir y correr el microservicio 1
-
-- Ejecutamos los siguientes comandos para construir y ejecutar el contenedor de Docker:
-
-   ```shell
-   $ cd microservice1
-
-   $ docker build -t api-python:1.0 .
-
-   $ docker run -d --name api-python --network tyk --ip 172.15.0.4 api-python:1.0
-   ```
-
-   En Linux:
-
-   ```shell
-   $ cd microservice1
-
-   $ sudo docker build -t api-python:1.0 .
-
-   $ sudo docker run -d --name api-python --network tyk --ip 172.15.0.4 api-python:1.0
-   ```
-
-   Nota: En caso de haber cambiado la IP de la subred, será necesario modificar el segundo octeto de la IP del comando anterior por el segundo octeto de la IP seleccionada anteriormente.
-
-### Construir y correr el microservicio 2
-
-- Ejecutamos los siguientes comandos para construir y ejecutar el contenedor de Docker:
-
-   ```shell
-   $ cd microservice2
-
-   $ docker build -t api-dart:1.0 .
-
-   $ docker run -d --name api-dart --network tyk --ip 172.15.0.5 api-dart:1.0
-   ```
-
-   En Linux:
-
-   ```shell
-   $ cd microservice2
-
-   $ sudo docker build -t api-dart:1.0 .
-
-   $ sudo docker run -d --name api-dart --network tyk --ip 172.15.0.5 api-dart:1.0
-   ```
-
-   Nota: En caso de haber cambiado la IP de la subred, será necesario modificar el segundo octeto de la IP del comando anterior por el segundo octeto de la IP seleccionada anteriormente.
-
-
-### Construir y correr el microservicio 3
-
-- Ejecutamos los siguientes comandos para construir y ejecutar el contenedor de Docker:
-
-   ```shell
-   $ cd microservice3
-
-   $ docker build -t api-django:1.0 .
-
-   $ docker run -d --name api-django --network tyk --ip 172.15.0.6 api-django:1.0
-   ```
-
-   En Linux:
-
-   ```shell
-   $ cd microservice3
-
-   $ sudo docker build -t api-django:1.0 .
-
-   $ sudo docker run -d --name api-django --network tyk --ip 172.15.0.6 api-django:1.0
-   ```
-
-   Nota: En caso de haber cambiado la IP de la subred, será necesario modificar el segundo octeto de la IP del comando anterior por el segundo octeto de la IP seleccionada anteriormente.
+    Nota: En caso de haber cambiado la IP de la subred, será necesario modificar el segundo octeto de la IP del comando anterior por el segundo octeto de la IP seleccionada anteriormente.
 
 
 ### Construir y correr la GUI
@@ -974,9 +702,10 @@ Es importante verificar que los contenedores se encuentran detenidos para asegur
 
 ## Versión
 
-1.0.0 - Marzo 2021
+2.0.0 - Mayo 2021
 
 ## Autores
 
 * **Perla Velasco**
 * **Jorge Alfonso Solís**
+* **Equipo ASD**

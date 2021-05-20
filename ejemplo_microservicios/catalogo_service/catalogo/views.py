@@ -52,38 +52,6 @@ class CatalogViewSet(viewsets.ViewSet):
         serializer_product=ProductSerializer(product,many=False)
         return Response(serializer_product.data)
 
-    # def product_list(self, request, category_slug=None):
-    #     category = None
-
-    #     # Se obtienen todas las categorías.
-    #     categories = Category.objects.all()
-
-    #     # Se filtran los productos que se encuentran disponibles.
-    #     products = Product.objects.filter(available=True)
-
-    #     # Si se recibió el slug de la categoría, se seleccionan solo los productos pertenecientes
-    #     # a esa categoría, de forma contraria, se envían todos los productos para mostrarlos.
-    #     if category_slug:
-    #         category = get_object_or_404(Category, slug=category_slug)
-    #         products = products.filter(category=category)
-        
-    #     return render(request, 'shop/product/list.html', {'category': category,
-    #                                                     'categories': categories,
-    #                                                     'products': products})
-
-
-    # def product_detail(self, request, id, slug):
-
-    #     # Se obtiene la información del producto que se mostrará.
-    #     product = get_object_or_404(Product, id=id, slug=slug, available=True)
-
-    #     # Se obtiene el formulario para agregar elementos de este producto al carrito.
-    #     cart_product_form = CartAddProductForm()
-    #     return render(request,
-    #                 'shop/product/detail.html',
-    #                 {'product': product,
-    #                 'cart_product_form': cart_product_form})
-
 class CarritoItemViewSet(viewsets.ViewSet):
 
     def clear(self, request):

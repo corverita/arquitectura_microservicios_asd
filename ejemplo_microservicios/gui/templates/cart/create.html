@@ -16,20 +16,24 @@
         </ul>
         <p>Total: ${{ result['sum_cart'] }}</p>
     </div>
-    <form action="" method="post" class="order-form">
-        <td><label for="first_name">First_name:</label></td>
-        <td><input type="text" name="first_name"></td>
-        <td><label for="last_name">Last_name</form>label></td>
-        <td><input type="text" name="last_name"></td>
-        <td><label for="email">Email:</label></td>
-        <td><input type="email" name="email"></td>
-        <td><label for="address">Address:</label></td>
-        <td><input type="text" name="address"></td>
-        <td><label for="postal_code">Postal Code:</label></td>
-        <td><input type="number" name="postal_code"></td>
-        <td><label for="city">City:</label></td>
-        <td><input type="text" name="city"> </td>
-        <p><input type="submit" value="Place Order"></p>
-        {{ csrf_input }}
+    
+    <form action="" method="post" class="form">
+        <ul style="list-style: none;">
+            <li><label for="first_name">First_name:</label><br>
+            <input type="text" name="first_name"></li><br>
+            <li><label for="last_name">Last_name</label><br>
+            <input type="text" name="last_name"></li><br>
+            <li><label for="email">Email:</label><br>
+            <input type="email" name="email"></li><br>
+            <li><label for="address">Address:</label><br>
+            <input type="text" name="address"></li><br>
+            <li><label for="postal_code">Postal Code:</label><br>
+            <input type="number" name="postal_code"></li><br>
+            <li><label for="city">City:</label><br>
+            <input type="text" name="city"> </li><br>
+            <li><input type="submit" value="Place Order"></li><br>
+        </ul>
     </form>
+    
+    
 {% endblock %}

@@ -3,7 +3,7 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('a/', Orders_ViewSet.as_view({
+    path('modify/', Orders_ViewSet.as_view({
         'delete':'destroy', #cancel order
         'put':'update' #update order
     })),

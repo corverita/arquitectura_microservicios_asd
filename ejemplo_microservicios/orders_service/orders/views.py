@@ -11,16 +11,6 @@ from django.utils import timezone
 
 # Create your views here.
 
-def verify_expired_time(request,id):
-    order=Order.objects.get(id=id)
-    hora=timezone.now()
-    offset=hora-order.created
-    horas_diferencia=offset.days*24+(offset.seconds/3600)
-    if(horas_diferencia<24):
-        return True
-    else:
-        return False
-
 class Orders_ViewSet(viewsets.ViewSet):
     # Envia un email como si fuera un recibo de orden.
     def send_email(self,change, action, order_id,items=None):
@@ -138,7 +128,6 @@ class Orders_ViewSet(viewsets.ViewSet):
             order.delete()
         
         return Response(status = status.HTTP_200_OK)
-    
 
     def verify_expired_time(self,id):
         order=Order.objects.get(id=id)
